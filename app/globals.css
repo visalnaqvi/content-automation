@@ -1,13 +1,6 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root{
+  --foreground:#023047;
+  --background:#f8f9fa;
 }
 
 html,
@@ -35,8 +28,44 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.nav{
+  padding: 20px;
+  box-shadow: 10px 10px 20px #00000030;
+}
+
+.nav ul{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.blog-wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.blog-body{
+  width: 70%;
+  padding: 80px 30px;
+}
+
+.blog-sidebar{
+  width: 30%;
+}
+
+.blog-title{
+  font-size: 45px;
+  margin-bottom: 20px;
+}
+
+p{
+  font-size: 18px;
+  line-height: 25px;
+  margin-bottom: 10px;
+}
+
+.sub-headings{
+  margin: 50px 0 20px 0;
+  font-size: 30px;
 }
