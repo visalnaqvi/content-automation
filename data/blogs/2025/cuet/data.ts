@@ -38,5 +38,15 @@ export const data = [
     "title": "CUET Exam Result 2025",
     "description": "A detailed blog about CUET Exam Result 2025 covering key insights and important information.",
     "img": "/images/blogs/cuet-exam-result-2025.jpg"
+  },
+  {
+    "date": "2025-02-20",
+    "year": "2025",
+    "category": "cuet",
+    "id": 4,
+    "url": "/blogs/2025/cuet/cuet-exam-admit-card-2025",
+    "title": "CUET Exam Admit Card 2025",
+    "description": "A detailed blog about CUET Exam Admit Card 2025 covering key insights and important information.",
+    "img": "/images/blogs/cuet-exam-admit-card-2025.jpg"
   }
 ];

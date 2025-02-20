@@ -1,4 +1,3 @@
-```javascript
 import React from 'react';
 import Head from 'next/head';
 
@@ -59,4 +58,3 @@ const cuet_exam_result_2025: React.FC = () => {
 };
 
 export default cuet_exam_result_2025;
-```

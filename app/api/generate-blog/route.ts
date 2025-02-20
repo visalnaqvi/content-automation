@@ -139,13 +139,14 @@ You need to follow this output format very strictly.
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: `You are an skill full experienced professional and expertise in frontend development using next.js.` },
-        { role: 'user', content: `Fix all the issues in the below code, make sure all tags have there closing tags and html entites are used properly and if you see any other problem with the code fix and only return the fixed out in output and nothing else. 
+        { role: 'user', content: `Fix all the issues in the below tsx code for a .tsx file, make sure all tags have there closing tags and html entites are used properly and if you see any other problem with the code fix and only return the fixed out in output and nothing else. 
           Code:
           ${blogPageContent}` }
       ]
     });
     if(response.choices[0].message.content != null){
-      const finalContent = response2.choices[0].message.content || "";
+      const rawContent = response2.choices[0].message.content || "";
+      const finalContent = rawContent.replace(/^[\s\S]*?(?=import)/, "").replace(/\n```$/, "");
       fs.writeFileSync(blogFilePath, finalContent, 'utf-8');
     }
 
