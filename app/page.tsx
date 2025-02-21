@@ -1,16 +1,19 @@
 import category from "../data/category/data.json"
 import Link from "next/link";
-import Head from "next/head";
 import { Category } from "@/types/category";
 import { Blog } from "@/types/blog";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: process.env.NEXT_PUBLIC_WEBSITE_NAME + " | Home",
+  description: process.env.NEXT_PUBLIC_WEBSITE_KEYWORDS,
+};
+
+
 export default function Home() {
+
   return (
     <div>
-      <Head>
-        <title>{process.env.NEXT_PUBLIC_WEBSITE_NAME} | Home</title>
-        <meta name="description" content={process.env.NEXT_PUBLIC_WEBSITE_TITLE} />
-        <meta name="keywords" content={process.env.NEXT_PUBLIC_WEBSITE_KEYWORDS} />
-      </Head>
       <main>
         <div className="hero">
           <div className="hero-content">

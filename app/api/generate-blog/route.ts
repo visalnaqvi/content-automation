@@ -21,6 +21,7 @@ function validateBlogRequest(data: any): data is BlogRequestData {
     "contentWords",
     "month",
     "note",
+    "description",
   ]
 
   for (const field of requiredFields) {
@@ -78,7 +79,11 @@ function updateCategoryFile(blog: Blog, category: string) {
       }
       categoryData.blogs.unshift(blog)
 
-      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+      fs.writeFileSync(
+        categoryFilePath,
+        JSON.stringify(existingData, null, 2),
+        "utf-8"
+      )
 
       console.log("Updated category data.json file successfully")
     } else {
@@ -133,7 +138,11 @@ function updateDataFile(
 
     existingData.unshift(newEntry)
 
-    fs.writeFileSync(dataFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+    fs.writeFileSync(
+      dataFilePath,
+      JSON.stringify(existingData, null, 2),
+      "utf-8"
+    )
 
     console.log("Updated data.json file successfully")
     updateCategoryFile(newEntry, category)
@@ -178,6 +187,7 @@ export async function POST(req: Request) {
       contentWords,
       month,
       note,
+      description,
     } = body as BlogRequestData
 
     const categoryFilePath = path.join(
@@ -248,13 +258,12 @@ You need to follow this output format very strictly.
 1) Output should be in .tsx format that I can directly copy paste inside the return statement of a .tsx file on my next.js website
 2) Output should run without any errors I will paste the content inside the return statement so make sure not include anything else not even the return statment just the code inside of return statment
 3) Do not include any other characters like quotes or double or anything else in starting or ending of the output.
-4) Must include all meta tags needed for proper seo like "title" , "description" etc inside the <Head> tag
-5) Wrap the title in <h1> tag and give it the className "blog-title".
-6) Wrap subheading in <h2> tag and give it the className "sub-headings".
-7) Wrap heading inside <h3> tag and give it the className "h3-heading".
-8) Wrap the important keyword and targeted keywords inside <strong> tag
-9) Use <table> tag to present tabular datain code
-10) Make sure that all the tags and elements have closing tags <h1>,<p>,<strong>,<h2>,<meta>,<title> etc all of them and any other tag used should always have a closing tag as per the tsx guildlines`,
+4) Wrap the title in <h1> tag and give it the className "blog-title".
+5) Wrap subheading in <h2> tag and give it the className "sub-headings".
+6) Wrap heading inside <h3> tag and give it the className "h3-heading".
+7) Wrap the important keyword and targeted keywords inside <strong> tag
+8) Use <table> tag to present tabular datain code
+9) Make sure that all the tags and elements have closing tags <h1>,<p>,<strong>,<h2>,<meta>,<title> etc all of them and any other tag used should always have a closing tag as per the tsx guildlines`,
         },
       ],
     })
@@ -280,7 +289,11 @@ You need to follow this output format very strictly.
 
     const blogPageContent = `
       import React from 'react';
-      import Head from 'next/head'
+      import type { Metadata } from "next";
+      export const metadata: Metadata = {
+        title: ${topic},
+        description: ${description},
+      };
       const ${slug.replace(/-/g, "_")}: React.FC = () => {
         return (
           <div className='blog-wrapper'>
