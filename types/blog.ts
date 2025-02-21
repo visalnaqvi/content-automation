@@ -1,4 +1,4 @@
-type Blog = {
+export type Blog = {
     date:string,
     year:string,
     category:string,
@@ -7,4 +7,4 @@ type Blog = {
     title:string,
     description:string,
     img:string
-}
+}   

@@ -2,7 +2,7 @@ import {data as categories} from "@/data/category/data"
 import fs from "fs"
 import path from "path"
 import {exec} from "child_process"
-
+import { Category } from "@/types/category"
 function addTogit(message: string) {
   exec(
     'git add . && git commit -m " ' + message + '" && git push',

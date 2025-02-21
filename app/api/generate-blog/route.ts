@@ -2,8 +2,49 @@ import fs from "fs"
 import path from "path"
 import {exec} from "child_process"
 import OpenAI from "openai"
-
+import { BlogRequestData } from "@/types/blogRequestData"
+import { Blog } from "@/types/blog"
+import { Category } from "@/types/category"
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
+
+function validateBlogRequest(data: any): data is BlogRequestData {
+  const requiredFields: (keyof BlogRequestData)[] = [
+    'topic',
+    'slug',
+    'category', 
+    'year',
+    'keyword',
+    'wordLength',
+    'audience',
+    'numberOfSubheading',
+    'contentPara',
+    'contentWords',
+    'month',
+    'note'
+  ]
+
+  for (const field of requiredFields) {
+    if (!(field in data)) {
+      throw new Error(`Missing required field: ${field}`)
+    }
+  }
+
+  // Validate number fields
+  if (typeof data.wordLength !== 'number' || data.wordLength <= 0) {
+    throw new Error('wordLength must be a positive number')
+  }
+  if (typeof data.numberOfSubheading !== 'number' || data.numberOfSubheading <= 0) {
+    throw new Error('numberOfSubheading must be a positive number')
+  }
+  if (typeof data.contentPara !== 'number' || data.contentPara <= 0) {
+    throw new Error('contentPara must be a positive number')
+  }
+  if (typeof data.contentWords !== 'number' || data.contentWords <= 0) {
+    throw new Error('contentWords must be a positive number')
+  }
+
+  return true
+}
 
 function updateCategoryFile(blog: Blog, category: string) {
   const categoryFilePath = path.join(
@@ -39,7 +80,9 @@ function updateCategoryFile(blog: Blog, category: string) {
       }
       categoryData.blogs.unshift(blog)
 
-      const updatedContent = `export const data = ${JSON.stringify(
+      const updatedContent = `
+      import { Category } from "@/types/category"
+      export const data:Category[] = ${JSON.stringify(
         existingData,
         null,
         2
@@ -82,7 +125,7 @@ function updateDataFile(
     }
 
     if (!fs.existsSync(dataFilePath)) {
-      fs.writeFileSync(dataFilePath, "export const data = [];", "utf-8")
+      fs.writeFileSync(dataFilePath, "import { Blog } from '@/types/blog';\nexport const data:Blog[] = [];", "utf-8")
     }
 
     const fileContent = fs.readFileSync(dataFilePath, "utf-8")
@@ -107,7 +150,7 @@ function updateDataFile(
 
     existingData.push(newEntry)
 
-    const updatedContent = `export const data = ${JSON.stringify(
+    const updatedContent = `import { Blog } from '@/types/blog';\nexport const data:Blog[] = ${JSON.stringify(
       existingData,
       null,
       2
@@ -119,12 +162,28 @@ function updateDataFile(
     updateCategoryFile(newEntry, category)
   } catch (error) {
     console.error("Error updating data.ts:", error)
+    throw error
   }
 }
 
 export async function POST(req: Request) {
   try {
     const body = await req.json()
+    
+    // Validate request data
+    if (!validateBlogRequest(body)) {
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Invalid request data",
+        message: "The request data is missing required fields or contains invalid values"
+      }), {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    }
+
     const {
       topic,
       slug,
@@ -138,7 +197,7 @@ export async function POST(req: Request) {
       contentWords,
       month,
       note,
-    } = body
+    } = body as BlogRequestData
 
     const categoryFilePath = path.join(
       process.cwd(),
@@ -151,14 +210,30 @@ export async function POST(req: Request) {
       /export\s+const\s+data\s*=\s*(\[[\s\S]*?\]);/
     )
     if (!categoryMatch) {
-      throw new Error("Invalid category data file format")
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Invalid category data",
+        message: "The category data file is corrupted or in an invalid format"
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
     }
     const categories: Category[] = eval(categoryMatch[1])
     const categoryExists = categories.some(c => c.key === category)
 
     if (!categoryExists) {
-      return new Response(JSON.stringify({error: "Category does not exist"}), {
+      return new Response(JSON.stringify({
+        success: false,
+        error: "Invalid category",
+        message: "The specified category does not exist"
+      }), {
         status: 400,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
     }
 
@@ -196,7 +271,12 @@ You need to follow this output format very strictly.
         },
       ],
     })
-    const blogContent = response.choices[0].message.content || ""
+
+    if (!response.choices[0].message.content) {
+      throw new Error("Failed to generate blog content")
+    }
+
+    const blogContent = response.choices[0].message.content
     const blogDirPath = path.join(
       process.cwd(),
       "app",
@@ -244,13 +324,16 @@ You need to follow this output format very strictly.
         },
       ],
     })
-    if (response.choices[0].message.content != null) {
-      const rawContent = response2.choices[0].message.content || ""
-      const finalContent = rawContent
-        .replace(/^[\s\S]*?(?=import)/, "")
-        .replace(/\n```$/, "")
-      fs.writeFileSync(blogFilePath, finalContent, "utf-8")
+
+    if (!response2.choices[0].message.content) {
+      throw new Error("Failed to format blog content")
     }
+
+    const rawContent = response2.choices[0].message.content
+    const finalContent = rawContent
+      .replace(/^[\s\S]*?(?=import)/, "")
+      .replace(/\n```$/, "")
+    fs.writeFileSync(blogFilePath, finalContent, "utf-8")
 
     exec(
       'git add . && git commit -m "Auto-generated blog: ' +
@@ -259,9 +342,7 @@ You need to follow this output format very strictly.
       (error, stdout, stderr) => {
         if (error) {
           console.error(`Git Error: ${error.message}`)
-          return new Response(JSON.stringify({error: "Git commit failed"}), {
-            status: 500,
-          })
+          throw new Error("Failed to commit changes to Git")
         }
       }
     )
@@ -269,13 +350,32 @@ You need to follow this output format very strictly.
     updateDataFile(topic, slug, category, year, month)
 
     return new Response(
-      JSON.stringify({message: "Blog created and pushed to Git!"}),
-      {status: 200}
+      JSON.stringify({
+        success: true,
+        message: "Blog created and pushed to Git successfully!",
+        data: {
+          slug,
+          topic,
+          category
+        }
+      }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     )
   } catch (err) {
     console.error("Error generating blog:", err)
-    return new Response(JSON.stringify({error: "Blog generation failed"}), {
+    return new Response(JSON.stringify({
+      success: false,
+      error: "Blog generation failed",
+      message: err instanceof Error ? err.message : "An unexpected error occurred",
+    }), {
       status: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
   }
 }
