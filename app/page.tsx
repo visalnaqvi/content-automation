@@ -9,7 +9,6 @@ export const metadata: Metadata = {
   description: process.env.NEXT_PUBLIC_WEBSITE_KEYWORDS,
 };
 
-
 export default function Home() {
 
   return (
