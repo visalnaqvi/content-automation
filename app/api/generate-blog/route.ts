@@ -131,7 +131,7 @@ function updateDataFile(
       img: `/images/blogs/${slug}.jpg`,
     }
 
-    existingData.push(newEntry)
+    existingData.unshift(newEntry)
 
     fs.writeFileSync(dataFilePath, JSON.stringify(existingData, null, 2), "utf-8")
 

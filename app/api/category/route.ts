@@ -1,8 +1,13 @@
-import {data as categories} from "@/data/category/data"
 import fs from "fs"
 import path from "path"
 import {exec} from "child_process"
 import { Category } from "@/types/category"
+
+function readCategories(categoryFilePath: string): Category[] {
+  const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
+  return JSON.parse(fileContent)
+}
+
 function addTogit(message: string) {
   exec(
     'git add . && git commit -m " ' + message + '" && git push',
@@ -23,7 +28,14 @@ export async function GET(req: Request) {
     const filterFor = searchParams.get("filterFor")
     const filterValue = searchParams.get("filterValue")
 
-    let filteredData = [...categories]
+    const categoryFilePath = path.join(
+      process.cwd(),
+      "data",
+      "category",
+      "data.json"
+    )
+
+    let filteredData = readCategories(categoryFilePath)
 
     // Apply filtering if filterFor and filterValue are provided
     if (filterFor && filterValue) {
@@ -81,10 +93,10 @@ export async function POST(req: Request) {
       process.cwd(),
       "data",
       "category",
-      "data.ts"
+      "data.json"
     )
 
-    let existingData: Category[] = [...categories]
+    let existingData = readCategories(categoryFilePath)
 
     // Check if category with same key already exists
     if (existingData.some(category => category.key === key)) {
@@ -103,14 +115,9 @@ export async function POST(req: Request) {
       blogs: [],
     }
 
-    existingData.push(newCategory)
+    existingData.unshift(newCategory)
 
-    const updatedContent = `export const data = ${JSON.stringify(
-      existingData,
-      null,
-      2
-    )};`
-    fs.writeFileSync(categoryFilePath, updatedContent, "utf-8")
+    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
     addTogit("Added new category " + key)
     return new Response(
       JSON.stringify({message: "Category added successfully"}),
@@ -141,10 +148,10 @@ export async function DELETE(req: Request) {
       process.cwd(),
       "data",
       "category",
-      "data.ts"
+      "data.json"
     )
 
-    let existingData: Category[] = [...categories]
+    let existingData = readCategories(categoryFilePath)
 
     const categoryIndex = existingData.findIndex(
       category => category.key === key
@@ -159,12 +166,7 @@ export async function DELETE(req: Request) {
     // Remove the category
     existingData.splice(categoryIndex, 1)
 
-    const updatedContent = `export const data = ${JSON.stringify(
-      existingData,
-      null,
-      2
-    )};`
-    fs.writeFileSync(categoryFilePath, updatedContent, "utf-8")
+    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
 
     return new Response(
       JSON.stringify({message: "Category deleted successfully"}),
@@ -195,10 +197,10 @@ export async function PUT(req: Request) {
       process.cwd(),
       "data",
       "category",
-      "data.ts"
+      "data.json"
     )
 
-    let existingData: Category[] = [...categories]
+    let existingData = readCategories(categoryFilePath)
 
     const categoryIndex = existingData.findIndex(
       category => category.key === key
@@ -218,12 +220,7 @@ export async function PUT(req: Request) {
       description: description || existingData[categoryIndex].description,
     }
 
-    const updatedContent = `export const data = ${JSON.stringify(
-      existingData,
-      null,
-      2
-    )};`
-    fs.writeFileSync(categoryFilePath, updatedContent, "utf-8")
+    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
     addTogit("Updated category " + key)
     return new Response(
       JSON.stringify({message: "Category updated successfully"}),

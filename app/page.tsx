@@ -1,4 +1,4 @@
-import { data as category } from "../data/category/data"
+import category from "../data/category/data.json"
 import Link from "next/link";
 import Head from "next/head";
 import { Category } from "@/types/category";
