@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import { applyTheme } from "./utils/theme";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -22,19 +22,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  if (typeof window !== 'undefined') {
+    console.log("Applying theme");
+    applyTheme();
+  }
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-      <nav className="nav">
-        <ul>
-          <li>Home</li>
-          <li>Home</li>
-          <li>Home</li>
-          <li>Home</li>
-          <li>Home</li>
-        </ul>
-      </nav>
+        <nav className="nav">
+          <p className="logo">{process.env.NEXT_PUBLIC_WEBSITE_NAME}</p>
+          <ul>
+            <li>Home</li>
+            <li>Home</li>
+            <li>Home</li>
+            <li>Home</li>
+            <li>Home</li>
+          </ul>
+          <div className="btnWrapper">
+            <button className="heroBtn">Login</button>
+            <button className="heroBtn">More Info</button>
+          </div>
+        </nav>
         {children}
+        <footer className="footer">
+          Copyright 2025 {process.env.NEXT_PUBLIC_WEBSITE_NAME}
+        </footer>
       </body>
     </html>
   );

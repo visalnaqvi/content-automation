@@ -1,6 +1,11 @@
-:root{
-  --foreground:#023047;
-  --background:#f8f9fa;
+:root {
+  --foreground: #023047;
+  --foreground-background: #bce3f5;
+  --foreground-light: #d3e7f1;
+  --support-blue: #669bbc;
+  --contrast-red: #d62828;
+  --contrast-yellow: #f77f00;
+  --background: #f8f9fa;
 }
 
 html,
@@ -28,44 +33,139 @@ a {
   text-decoration: none;
 }
 
-.nav{
-  padding: 20px;
-  box-shadow: 10px 10px 20px #00000030;
+ul {
+  list-style: none;
 }
 
-.nav ul{
+.nav {
+  padding: 20px;
+  box-shadow: 10px 10px 20px #00000030;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav ul {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.blog-wrapper{
+.nav ul li {
+  margin: 5px 20px;
+}
+
+.blog-wrapper {
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
-.blog-body{
+.blog-body {
   width: 70%;
   padding: 80px 30px;
 }
 
-.blog-sidebar{
+.blog-sidebar {
   width: 30%;
 }
 
-.blog-title{
+.blog-title {
   font-size: 45px;
   margin-bottom: 20px;
 }
 
-p{
+p {
   font-size: 18px;
   line-height: 25px;
   margin-bottom: 10px;
 }
 
-.sub-headings{
+.sub-headings {
   margin: 50px 0 20px 0;
   font-size: 30px;
+}
+
+.hero {
+  padding: 80px 20px;
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+.hero h1 {
+  margin-bottom: 20px;
+  font-size: 45px;
+}
+
+.hero-content {
+  width: 80%;
+}
+
+.heroBtn {
+  padding: 15px 30px;
+  color: var(--background);
+  background-color: var(--contrast-red);
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  margin: 0px 5px;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.heroBtn:hover {
+  background-color: var(--contrast-yellow);
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.category-cards-holder {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.category-card {
+  max-width: 300px;
+  background-color: var(--foreground-light);
+  border-radius: 10px;
+  margin: 0 10px 10px 0;
+  flex-grow: 1;
+  padding: 20px;
+  border: 1px solid var(--support-blue);
+}
+
+.section {
+  padding: 80px 30px;
+  padding-bottom: 0;
+}
+
+.read-more-btn {
+  padding: 10px 20px;
+  background-color: var(--contrast-red);
+  color: var(--background);
+  border: none;
+  border-radius: 5px;
+}
+
+.section-title {
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+.footer {
+  padding: 20px;
+  text-align: center;
+  font-weight: 900;
+  font-size: 20px;
+  background-color: var(--foreground-light);
+  color: var(--foreground);
+  box-shadow: 10px 10px 20px #00000080;
+  border-top: 1px solid var(--support-blue);
+  margin-top: 20px;
 }
