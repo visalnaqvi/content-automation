@@ -1,7 +1,8 @@
-import Image from "next/image";
 import { data as category } from "../data/category/data"
 import Link from "next/link";
 import Head from "next/head";
+import { Category } from "@/types/category";
+import { Blog } from "@/types/blog";
 export default function Home() {
   return (
     <div>

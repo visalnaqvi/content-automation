@@ -2,25 +2,25 @@ import fs from "fs"
 import path from "path"
 import {exec} from "child_process"
 import OpenAI from "openai"
-import { BlogRequestData } from "@/types/blogRequestData"
-import { Blog } from "@/types/blog"
-import { Category } from "@/types/category"
+import {BlogRequestData} from "@/types/blogRequestData"
+import {Blog} from "@/types/blog"
+import {Category} from "@/types/category"
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
 
 function validateBlogRequest(data: any): data is BlogRequestData {
   const requiredFields: (keyof BlogRequestData)[] = [
-    'topic',
-    'slug',
-    'category', 
-    'year',
-    'keyword',
-    'wordLength',
-    'audience',
-    'numberOfSubheading',
-    'contentPara',
-    'contentWords',
-    'month',
-    'note'
+    "topic",
+    "slug",
+    "category",
+    "year",
+    "keyword",
+    "wordLength",
+    "audience",
+    "numberOfSubheading",
+    "contentPara",
+    "contentWords",
+    "month",
+    "note",
   ]
 
   for (const field of requiredFields) {
@@ -30,17 +30,20 @@ function validateBlogRequest(data: any): data is BlogRequestData {
   }
 
   // Validate number fields
-  if (typeof data.wordLength !== 'number' || data.wordLength <= 0) {
-    throw new Error('wordLength must be a positive number')
+  if (typeof data.wordLength !== "number" || data.wordLength <= 0) {
+    throw new Error("wordLength must be a positive number")
   }
-  if (typeof data.numberOfSubheading !== 'number' || data.numberOfSubheading <= 0) {
-    throw new Error('numberOfSubheading must be a positive number')
+  if (
+    typeof data.numberOfSubheading !== "number" ||
+    data.numberOfSubheading <= 0
+  ) {
+    throw new Error("numberOfSubheading must be a positive number")
   }
-  if (typeof data.contentPara !== 'number' || data.contentPara <= 0) {
-    throw new Error('contentPara must be a positive number')
+  if (typeof data.contentPara !== "number" || data.contentPara <= 0) {
+    throw new Error("contentPara must be a positive number")
   }
-  if (typeof data.contentWords !== 'number' || data.contentWords <= 0) {
-    throw new Error('contentWords must be a positive number')
+  if (typeof data.contentWords !== "number" || data.contentWords <= 0) {
+    throw new Error("contentWords must be a positive number")
   }
 
   return true
@@ -51,7 +54,7 @@ function updateCategoryFile(blog: Blog, category: string) {
     process.cwd(),
     "data",
     "category",
-    "data.ts"
+    "data.json"
   )
   const categoryDirPath = path.dirname(categoryFilePath)
 
@@ -64,12 +67,7 @@ function updateCategoryFile(blog: Blog, category: string) {
 
     if (fs.existsSync(categoryFilePath)) {
       const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
-      const match = fileContent.match(
-        /export\s+const\s+data\s*=\s*(\[[\s\S]*?\]);/
-      )
-      if (match) {
-        existingData = eval(match[1])
-      }
+      existingData = JSON.parse(fileContent)
     }
 
     let categoryData = existingData.find(c => c.key === category)
@@ -80,16 +78,9 @@ function updateCategoryFile(blog: Blog, category: string) {
       }
       categoryData.blogs.unshift(blog)
 
-      const updatedContent = `
-      import { Category } from "@/types/category"
-      export const data:Category[] = ${JSON.stringify(
-        existingData,
-        null,
-        2
-      )};`
-      fs.writeFileSync(categoryFilePath, updatedContent, "utf-8")
+      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
 
-      console.log("Updated category data.ts file successfully")
+      console.log("Updated category data.json file successfully")
     } else {
       throw new Error("Category does not exist")
     }
@@ -113,7 +104,7 @@ function updateDataFile(
     year,
     month,
     category,
-    "data.ts"
+    "data.json"
   )
   const dataDirPath = path.dirname(dataFilePath)
 
@@ -124,44 +115,30 @@ function updateDataFile(
       fs.mkdirSync(dataDirPath, {recursive: true})
     }
 
-    if (!fs.existsSync(dataFilePath)) {
-      fs.writeFileSync(dataFilePath, "import { Blog } from '@/types/blog';\nexport const data:Blog[] = [];", "utf-8")
-    }
-
-    const fileContent = fs.readFileSync(dataFilePath, "utf-8")
-
-    const match = fileContent.match(
-      /export\s+const\s+data\s*=\s*(\[[\s\S]*?\]);/
-    )
-    if (match) {
-      existingData = eval(match[1]) // Convert the extracted array string to an actual array
+    if (fs.existsSync(dataFilePath)) {
+      const fileContent = fs.readFileSync(dataFilePath, "utf-8")
+      existingData = JSON.parse(fileContent)
     }
 
     const newEntry = {
-      date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+      date: new Date().toISOString().split("T")[0],
       year,
       category,
-      id: existingData.length, // Index as ID
-      url: `/blogs/${year}/${category}/${slug}`, // Construct blog URL
-      title: topic, // Title from request
+      id: existingData.length,
+      url: `/blogs/${category}/${year}/${slug}`,
+      title: topic,
       description: `A detailed blog about ${topic} covering key insights and important information.`,
-      img: `/images/blogs/${slug}.jpg`, // Assuming an image path
+      img: `/images/blogs/${slug}.jpg`,
     }
 
     existingData.push(newEntry)
 
-    const updatedContent = `import { Blog } from '@/types/blog';\nexport const data:Blog[] = ${JSON.stringify(
-      existingData,
-      null,
-      2
-    )};`
+    fs.writeFileSync(dataFilePath, JSON.stringify(existingData, null, 2), "utf-8")
 
-    fs.writeFileSync(dataFilePath, updatedContent, "utf-8")
-
-    console.log("Updated data.ts file successfully")
+    console.log("Updated data.json file successfully")
     updateCategoryFile(newEntry, category)
   } catch (error) {
-    console.error("Error updating data.ts:", error)
+    console.error("Error updating data.json:", error)
     throw error
   }
 }
@@ -169,19 +146,23 @@ function updateDataFile(
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    
+
     // Validate request data
     if (!validateBlogRequest(body)) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Invalid request data",
-        message: "The request data is missing required fields or contains invalid values"
-      }), {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json'
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid request data",
+          message:
+            "The request data is missing required fields or contains invalid values",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
+      )
     }
 
     const {
@@ -203,38 +184,44 @@ export async function POST(req: Request) {
       process.cwd(),
       "data",
       "category",
-      "data.ts"
+      "data.json"
     )
-    const categoryContent = fs.readFileSync(categoryFilePath, "utf-8")
-    const categoryMatch = categoryContent.match(
-      /export\s+const\s+data\s*=\s*(\[[\s\S]*?\]);/
-    )
-    if (!categoryMatch) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Invalid category data",
-        message: "The category data file is corrupted or in an invalid format"
-      }), {
-        status: 500,
-        headers: {
-          'Content-Type': 'application/json'
+    let categories: Category[]
+    try {
+      const categoryContent = fs.readFileSync(categoryFilePath, "utf-8")
+      categories = JSON.parse(categoryContent)
+    } catch (error) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid category data",
+          message: "Failed to read or parse category data",
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
+      )
     }
-    const categories: Category[] = eval(categoryMatch[1])
+
     const categoryExists = categories.some(c => c.key === category)
 
     if (!categoryExists) {
-      return new Response(JSON.stringify({
-        success: false,
-        error: "Invalid category",
-        message: "The specified category does not exist"
-      }), {
-        status: 400,
-        headers: {
-          'Content-Type': 'application/json'
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid category",
+          message: "The specified category does not exist",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
+      )
     }
 
     const response = await openai.chat.completions.create({
@@ -335,6 +322,8 @@ You need to follow this output format very strictly.
       .replace(/\n```$/, "")
     fs.writeFileSync(blogFilePath, finalContent, "utf-8")
 
+    updateDataFile(topic, slug, category, year, month)
+
     exec(
       'git add . && git commit -m "Auto-generated blog: ' +
         slug +
@@ -347,8 +336,6 @@ You need to follow this output format very strictly.
       }
     )
 
-    updateDataFile(topic, slug, category, year, month)
-
     return new Response(
       JSON.stringify({
         success: true,
@@ -356,26 +343,31 @@ You need to follow this output format very strictly.
         data: {
           slug,
           topic,
-          category
-        }
-      }), {
+          category,
+        },
+      }),
+      {
         status: 200,
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
     )
   } catch (err) {
     console.error("Error generating blog:", err)
-    return new Response(JSON.stringify({
-      success: false,
-      error: "Blog generation failed",
-      message: err instanceof Error ? err.message : "An unexpected error occurred",
-    }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json'
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Blog generation failed",
+        message:
+          err instanceof Error ? err.message : "An unexpected error occurred",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    })
+    )
   }
 }
