@@ -5,7 +5,7 @@ import OpenAI from "openai"
 import {BlogRequestData} from "@/types/blogRequestData"
 import {Blog} from "@/types/blog"
 import {Category} from "@/types/category"
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
+const openai = new OpenAI({apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY})
 
 function validateBlogRequest(data: any): data is BlogRequestData {
   const requiredFields: (keyof BlogRequestData)[] = [
