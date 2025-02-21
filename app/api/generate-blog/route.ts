@@ -100,7 +100,8 @@ function updateDataFile(
   slug: string,
   category: string,
   year: string,
-  month: string
+  month: string,
+  description: string
 ) {
   const dataFilePath = path.join(
     process.cwd(),
@@ -132,7 +133,7 @@ function updateDataFile(
       id: existingData.length,
       url: `/blogs/${category}/${year}/${slug}`,
       title: topic,
-      description: `A detailed blog about ${topic} covering key insights and important information.`,
+      description: description,
       img: `/images/blogs/${slug}.jpg`,
     }
 
@@ -335,7 +336,7 @@ You need to follow this output format very strictly.
       .replace(/\n```$/, "")
     fs.writeFileSync(blogFilePath, finalContent, "utf-8")
 
-    updateDataFile(topic, slug, category, year, month)
+    updateDataFile(topic, slug, category, year, month, description)
 
     exec(
       'git add . && git commit -m "Auto-generated blog: ' +

@@ -1,14 +1,14 @@
 import React from 'react';
-import Head from 'next/head';
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Crack CUET UG 2025: Your Gateway to Top Universities in India",
+  description: "Prepare to crack the CUET UG course and unlock your future at India's top universities. Get insights, tips, and a comprehensive guide to succeed.",
+};
 const CrackCUETUG2025YourGatewayToTopUniversitiesInIndia: React.FC = () => {
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
-        <Head>
-          <title>Crack CUET UG 2025: Your Gateway to Top Universities in India</title>
-          <meta name="description" content="Prepare to crack the CUET UG course and unlock your future at India's top universities. Get insights, tips, and a comprehensive guide to succeed." />
-        </Head>
         <h1 className="blog-title">Crack CUET UG 2025: Your Gateway to Top Universities in India</h1>
         <p>The Common University Entrance Test (CUET) has emerged as a crucial pathway for students seeking admission into numerous undergraduate programs across Indian universities. As students gear up for the CUET UG 2025, understanding the exam structure, preparation strategies, and opportunities it presents becomes imperative. This blog is dedicated to helping you navigate this essential journey successfully, ensuring you’re fully equipped to crack the <strong>CUET UG course</strong> and gain entry to your desired institution.</p>
 

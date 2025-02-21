@@ -1,14 +1,17 @@
 import React from 'react';
 import Head from 'next/head';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process",
+  description: "Explore all you need to know about CUET UG 2025. Get insights on courses, eligibility criteria, and the admission process. Prepare efficiently for your CUET exam!",
+};
+
 
 const CuetUg2025YourUltimateGuideToCoursesEligibilityAndAdmissionProcess: React.FC = () => {
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
-        <Head>
-          <title>CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process</title>
-          <meta name="description" content="Explore all you need to know about CUET UG 2025. Get insights on courses, eligibility criteria, and the admission process. Prepare efficiently for your CUET exam!" />
-        </Head>
         <h1 className="blog-title">CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process</h1>
         <p>The Common University Entrance Test (CUET) is the gateway for students aspiring to gain admission into various undergraduate courses across universities in India. As the education landscape evolves, CUET brings a streamlined approach for students and institutions alike. If you're gearing up for the <strong>CUET UG course</strong> in 2025, understanding the nuances of courses offered, eligibility criteria, and the admission process is vital. This comprehensive guide aims to equip you with all the necessary information for a successful journey ahead.</p>
 

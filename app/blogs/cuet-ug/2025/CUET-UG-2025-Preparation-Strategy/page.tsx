@@ -1,16 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores",
+  description: "Discover expert tips and effective strategies to ace the CUET UG course examination in 2025. Maximize your preparation with our comprehensive guide!",
+};
 const CUET_UG_2025_Preparation_Strategy: React.FC = () => {
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
-        <Head>
-          <meta charSet="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <title>CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores</title>
-          <meta name="description" content="Discover expert tips and effective strategies to ace the CUET UG course examination in 2025. Maximize your preparation with our comprehensive guide!" />
-        </Head>
         <h1 className="blog-title">CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores</h1>
         <p>The CUET UG course is a vital stepping stone for students aspiring to gain admission into various undergraduate programs across the country. The Common University Entrance Test (CUET) is essential for candidates seeking opportunities in central universities and other affiliated institutions. Preparing for CUET UG 2025 can seem daunting, but with the right strategies and tips, students can significantly improve their chances of scoring high. In this blog post, we'll discuss expert-approved preparation strategies and insights to help you navigate the CUET UG exam successfully.</p>
 

@@ -132,12 +132,17 @@ p {
 
 .category-card {
   max-width: 300px;
+  height: 180px;
   background-color: var(--foreground-light);
   border-radius: 10px;
   margin: 0 10px 10px 0;
   flex-grow: 1;
   padding: 20px;
   border: 1px solid var(--support-blue);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .section {

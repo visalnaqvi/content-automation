@@ -31,8 +31,8 @@ export default function Home() {
                 {
                   c.blogs.map((b: Blog, i: number) => (
                     <div key={i} className="category-card">
-                      <h3>{b.title}</h3>
-                      <p>{b.description}</p>
+                      <div><h3>{b.title}</h3>
+                      </div>
                       <Link href={b.url}><button className="read-more-btn">Read More</button></Link>
                     </div>
                   ))
