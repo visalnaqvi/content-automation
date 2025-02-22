@@ -5,8 +5,14 @@ import {Category} from "@/types/category"
 import {Octokit} from "@octokit/rest"
 
 const octokit = new Octokit({auth: process.env.GITHUB_TOKEN})
-function readCategories(categoryFilePath: string): Category[] {
+function readCategories(): Category[] {
   try {
+    const categoryFilePath = path.join(
+      process.cwd(),
+      "data",
+      "category",
+      "data.json"
+    )
     const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
     return JSON.parse(fileContent)
   } catch (error) {
@@ -67,14 +73,8 @@ export async function GET(req: Request) {
     const filterFor = searchParams.get("filterFor")
     const filterValue = searchParams.get("filterValue")
 
-    const categoryFilePath = path.join(
-      process.cwd(),
-      "data",
-      "category",
-      "data.json"
-    )
 
-    let filteredData = readCategories(categoryFilePath)
+    let filteredData = readCategories()
 
     // Apply filtering if filterFor and filterValue are provided
     if (filterFor && filterValue) {
@@ -144,14 +144,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const categoryFilePath = path.join(
-      process.cwd(),
-      "data",
-      "category",
-      "data.json"
-    )
-
-    let existingData = readCategories(categoryFilePath)
+    let existingData = readCategories()
 
     // Check if category with same key already exists
     if (existingData.some(category => category.key === key)) {
@@ -179,7 +172,6 @@ export async function POST(req: Request) {
     existingData.unshift(newCategory)
 
     try {
-      // fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
       await addTogit(
         "Added new category " + key,
         JSON.stringify(existingData, null, 2)
@@ -239,14 +231,7 @@ export async function DELETE(req: Request) {
       )
     }
 
-    const categoryFilePath = path.join(
-      process.cwd(),
-      "data",
-      "category",
-      "data.json"
-    )
-
-    let existingData = readCategories(categoryFilePath)
+    let existingData = readCategories()
 
     const categoryIndex = existingData.findIndex(
       category => category.key === key
@@ -270,12 +255,7 @@ export async function DELETE(req: Request) {
     const deletedCategory = existingData.splice(categoryIndex, 1)[0]
 
     try {
-      fs.writeFileSync(
-        categoryFilePath,
-        JSON.stringify(existingData, null, 2),
-        "utf-8"
-      )
-      // await addTogit("Deleted category " + key)
+      await addTogit("Deleted category " + key, JSON.stringify(existingData, null, 2))
     } catch (writeError) {
       throw new Error(
         `Failed to delete category: ${
@@ -331,14 +311,7 @@ export async function PUT(req: Request) {
       )
     }
 
-    const categoryFilePath = path.join(
-      process.cwd(),
-      "data",
-      "category",
-      "data.json"
-    )
-
-    let existingData = readCategories(categoryFilePath)
+    let existingData = readCategories()
 
     const categoryIndex = existingData.findIndex(
       category => category.key === key
@@ -369,12 +342,7 @@ export async function PUT(req: Request) {
     existingData[categoryIndex] = updatedCategory
 
     try {
-      fs.writeFileSync(
-        categoryFilePath,
-        JSON.stringify(existingData, null, 2),
-        "utf-8"
-      )
-      // await addTogit("Updated category " + key)
+      await addTogit("Updated category " + key, JSON.stringify(existingData, null, 2))
     } catch (writeError) {
       throw new Error(
         `Failed to update category: ${

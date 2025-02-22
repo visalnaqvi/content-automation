@@ -5,10 +5,55 @@ import OpenAI from "openai"
 import {BlogRequestData} from "@/types/blogRequestData"
 import {Blog} from "@/types/blog"
 import {Category} from "@/types/category"
+import {Octokit} from "@octokit/rest"
+
+const octokit = new Octokit({auth: process.env.GITHUB_TOKEN})
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "test-api-key",
 })
-
+async function addTogit(message: string, path: string, finalContent: string) {
+  console.log("Adding to GitHub...")
+  try {
+    const {data} = await octokit.repos.getContent({
+      owner: "visalnaqvi",
+      repo: "padaepartner",
+      path: path,
+      ref: "main",
+    })
+    const fileData = Array.isArray(data) ? data[0] : data
+    const sha = fileData.sha
+    await octokit.repos.createOrUpdateFileContents({
+      owner: "visalnaqvi",
+      repo: "padaepartner",
+      path: path,
+      message: message,
+      content: Buffer.from(finalContent).toString("base64"),
+      branch: "main",
+      sha,
+    })
+  } catch (error: unknown) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "status" in error &&
+      error.status === 404
+    ) {
+      // If file doesn't exist, create a new one
+      await octokit.repos.createOrUpdateFileContents({
+        owner: "visalnaqvi",
+        repo: "padaepartner",
+        path: path,
+        message: message,
+        content: Buffer.from(finalContent).toString("base64"),
+        branch: "main",
+      })
+    } else {
+      console.error("Error updating GitHub:", error)
+      throw error
+    }
+  }
+}
 function validateBlogRequest(data: any): data is BlogRequestData {
   const requiredFields: (keyof BlogRequestData)[] = [
     "topic",
@@ -52,7 +97,7 @@ function validateBlogRequest(data: any): data is BlogRequestData {
   return true
 }
 
-function updateCategoryFile(blog: Blog, category: string) {
+async function updateCategoryFile(blog: Blog, category: string) {
   const categoryFilePath = path.join(
     process.cwd(),
     "data",
@@ -81,10 +126,16 @@ function updateCategoryFile(blog: Blog, category: string) {
       }
       categoryData.blogs.unshift(blog)
 
-      fs.writeFileSync(
-        categoryFilePath,
-        JSON.stringify(existingData, null, 2),
-        "utf-8"
+      // fs.writeFileSync(
+      //   categoryFilePath,
+      //   JSON.stringify(existingData, null, 2),
+      //   "utf-8"
+      // )
+
+      await addTogit(
+        "Updated category data.json file successfully",
+        "data/category/data.json",
+        JSON.stringify(existingData, null, 2)
       )
 
       console.log("Updated category data.json file successfully")
@@ -97,7 +148,7 @@ function updateCategoryFile(blog: Blog, category: string) {
   }
 }
 
-function updateDataFile(
+async function updateDataFile(
   topic: string,
   slug: string,
   category: string,
@@ -140,10 +191,16 @@ function updateDataFile(
 
     existingData.unshift(newEntry)
 
-    fs.writeFileSync(
-      dataFilePath,
-      JSON.stringify(existingData, null, 2),
-      "utf-8"
+    // fs.writeFileSync(
+    //   dataFilePath,
+    //   JSON.stringify(existingData, null, 2),
+    //   "utf-8"
+    // )
+
+    await addTogit(
+      "updated data file for blog " + slug,
+      `data/blogs/${year}/${category}/data.json`,
+      JSON.stringify(existingData, null, 2)
     )
 
     console.log("Updated data.json file successfully")
@@ -283,7 +340,7 @@ You need to follow this output format very strictly.
       year,
       slug
     )
-    const blogFilePath = path.join(blogDirPath, "page.tsx")
+    // const blogFilePath = path.join(blogDirPath, "page.tsx")
 
     if (!fs.existsSync(blogDirPath)) {
       fs.mkdirSync(blogDirPath, {recursive: true})
@@ -352,8 +409,12 @@ You need to follow this output format very strictly.
     const finalContent = rawContent
       .replace(/^[\s\S]*?(?=import)/, "")
       .replace(/\n```$/, "")
-    fs.writeFileSync(blogFilePath, finalContent, "utf-8")
-
+    // fs.writeFileSync(blogFilePath, finalContent, "utf-8")
+    await addTogit(
+      "auto-generated blog " + slug,
+      `app/blogs/${category}/${year}/${slug}/page.tsx`,
+      finalContent
+    )
     updateDataFile(topic, slug, category, year, month, description)
 
     exec(
