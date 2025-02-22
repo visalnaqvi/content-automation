@@ -31,7 +31,7 @@ export default function RootLayout({
           <ul>
             <li><Link href="/">Home</Link></li>
             <li><Link href="/cuet-ug">CUET UG</Link></li>
-            <li>Home</li>
+            <li><Link href="/upsc">UPSC</Link></li>
             <li>Home</li>
             <li>Home</li>
           </ul>

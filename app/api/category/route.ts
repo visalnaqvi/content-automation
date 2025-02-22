@@ -2,7 +2,9 @@ import fs from "fs"
 import path from "path"
 import {exec} from "child_process"
 import { Category } from "@/types/category"
+import { Octokit } from "@octokit/rest";
 
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 function readCategories(categoryFilePath: string): Category[] {
   try {
     const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
@@ -13,19 +15,46 @@ function readCategories(categoryFilePath: string): Category[] {
   }
 }
 
-function addTogit(message: string) {
-  return new Promise((resolve, reject) => {
-    exec(
-      'git add . && git commit -m " ' + message + '" && git push',
-      (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Git Error: ${error.message}`)
-          reject(error)
-        }
-        resolve(stdout)
-      }
-    )
-  })
+async function addTogit(message: string, finalContent: string) {
+  console.log("Adding to GitHub...")
+  try {
+    const { data } = await octokit.repos.getContent({
+      owner: "visalnaqvi",
+      repo: "padaepartner",
+      path: "data/category/data.json",
+      ref: "main",
+    });
+    console.log("Data:", data)
+    const fileData = Array.isArray(data) ? data[0] : data;
+    const sha = fileData.sha;
+    console.log("SHA:", sha)
+    await octokit.repos.createOrUpdateFileContents({
+      owner: "visalnaqvi",
+      repo: "padaepartner",
+      path: "data/category/data.json",
+      message: message,
+      content: Buffer.from(finalContent).toString("base64"),
+      branch: "main",
+      sha,
+    });
+    console.log("File updated successfully")
+
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'status' in error && error.status === 404) {
+      // If file doesn't exist, create a new one
+      await octokit.repos.createOrUpdateFileContents({
+        owner: "visalnaqvi",
+        repo: "padaepartner",
+        path: "data/category/data.json",
+        message: message,
+        content: Buffer.from(finalContent).toString("base64"),
+        branch: "main",
+      });
+    } else {
+      console.error("Error updating GitHub:", error);
+      throw error;
+    }
+  }
 }
 
 export async function GET(req: Request) {
@@ -145,8 +174,8 @@ export async function POST(req: Request) {
     existingData.unshift(newCategory)
 
     try {
-      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
-      await addTogit("Added new category " + key)
+      // fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+      await addTogit("Added new category " + key , JSON.stringify(existingData, null, 2))
     } catch (writeError) {
       throw new Error(`Failed to save category: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`)
     }

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Category } from "@/types/category";
 import { Blog } from "@/types/blog";
 import { Metadata } from "next";
-import blogs from "@/data/blogs/2025/cuet-ug/data.json"
+import blogs from "@/data/blogs/2025/upsc/data.json"
 
 export const metadata: Metadata = {
   title: "UPSC Blogs | " + process.env.NEXT_PUBLIC_WEBSITE_NAME,
