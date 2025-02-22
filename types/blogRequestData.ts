@@ -12,4 +12,5 @@ export type BlogRequestData = {
   month: string
   note: string
   description: string
+  image: string,
 }

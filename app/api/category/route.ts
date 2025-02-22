@@ -1,6 +1,5 @@
 import fs from "fs"
 import path from "path"
-import {exec} from "child_process"
 import {Category} from "@/types/category"
 import {Octokit} from "@octokit/rest"
 
@@ -72,7 +71,6 @@ export async function GET(req: Request) {
     const {searchParams} = new URL(req.url)
     const filterFor = searchParams.get("filterFor")
     const filterValue = searchParams.get("filterValue")
-
 
     let filteredData = readCategories()
 
@@ -255,7 +253,10 @@ export async function DELETE(req: Request) {
     const deletedCategory = existingData.splice(categoryIndex, 1)[0]
 
     try {
-      await addTogit("Deleted category " + key, JSON.stringify(existingData, null, 2))
+      await addTogit(
+        "Deleted category " + key,
+        JSON.stringify(existingData, null, 2)
+      )
     } catch (writeError) {
       throw new Error(
         `Failed to delete category: ${
@@ -342,7 +343,10 @@ export async function PUT(req: Request) {
     existingData[categoryIndex] = updatedCategory
 
     try {
-      await addTogit("Updated category " + key, JSON.stringify(existingData, null, 2))
+      await addTogit(
+        "Updated category " + key,
+        JSON.stringify(existingData, null, 2)
+      )
     } catch (writeError) {
       throw new Error(
         `Failed to update category: ${

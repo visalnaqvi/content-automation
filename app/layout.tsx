@@ -32,12 +32,13 @@ export default function RootLayout({
             <li><Link href="/">Home</Link></li>
             <li><Link href="/cuet-ug">CUET UG</Link></li>
             <li><Link href="/upsc">UPSC</Link></li>
-            <li>Home</li>
-            <li>Home</li>
           </ul>
           <div className="btnWrapper">
             <button className="heroBtn">Login</button>
             <button className="heroBtn">More Info</button>
+          </div>
+          <div className="btnWrapper2">
+            <Link href={"/"}><button className="heroBtn">Home</button></Link>
           </div>
         </nav>
         {children}

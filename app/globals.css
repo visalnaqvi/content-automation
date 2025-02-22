@@ -209,15 +209,55 @@ th {
   color: var(--background);
 }
 
-.blog-sidebar{
+.blog-sidebar {
   padding: 30px 10px;
 }
 
-.blog-sidebar h2{
+.blog-sidebar h2 {
   font-size: 25px;
   margin-bottom: 20px;
 }
 
-.blog-sidebar .category-cards-holder{
+.blog-sidebar .category-cards-holder {
   justify-content: center;
+}
+
+.btnWrapper2 {
+  display: none;
+}
+
+@media only screen and (max-width: 820px) {
+  .nav ul,
+  .nav .btnWrapper {
+    display: none;
+  }
+
+  .btnWrapper2 {
+    display: block;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 35px;
+  }
+
+  .blog-wrapper {
+    flex-direction: column;
+  }
+
+  .blog-body {
+    width: 100%;
+    padding: 30px;
+  }
+
+  .blog-sidebar {
+    width: 100%;
+  }
+
+  .blog-title {
+    font-size: 40px;
+  }
 }

@@ -6,5 +6,7 @@ export type Blog = {
     url:string,
     title:string,
     description:string,
-    img:string
+    img:string,
+    slug:string,
+    month:string
 }   
