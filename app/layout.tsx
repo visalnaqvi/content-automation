@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,8 +29,8 @@ export default function RootLayout({
         <nav className="nav">
           <p className="logo">{process.env.NEXT_PUBLIC_WEBSITE_NAME}</p>
           <ul>
-            <li>Home</li>
-            <li>Home</li>
+            <li><Link href="/">Home</Link></li>
+            <li><Link href="/cuet-ug">CUET UG</Link></li>
             <li>Home</li>
             <li>Home</li>
             <li>Home</li>

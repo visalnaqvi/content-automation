@@ -1,7 +1,9 @@
 import React from 'react';
-import Head from 'next/head';
 import { Metadata } from "next";
-
+import { Category } from "@/types/category";
+import allCategory from "@/data/category/data.json"
+import Link from 'next/link';
+import { Blog } from '@/types/blog';
 export const metadata: Metadata = {
   title: "CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process",
   description: "Explore all you need to know about CUET UG 2025. Get insights on courses, eligibility criteria, and the admission process. Prepare efficiently for your CUET exam!",
@@ -9,6 +11,8 @@ export const metadata: Metadata = {
 
 
 const CuetUg2025YourUltimateGuideToCoursesEligibilityAndAdmissionProcess: React.FC = () => {
+  const category = "cuet-ug"
+  const currentCategory:Category | undefined = allCategory.find((item: Category) => item.key === category)
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
@@ -144,7 +148,18 @@ const CuetUg2025YourUltimateGuideToCoursesEligibilityAndAdmissionProcess: React.
         <p>This guide serves as a resource to bolster your confidence and clarity as you embark on your educational journey. Stay motivated, keep practicing, and remember to enjoy the process of learning and personal growth. With diligence and determination, your goals are well within reach! Best of luck!</p>
       </div>
       <div className='blog-sidebar'>
-        <p>this is side bar</p>
+        <h2>Related Blogs</h2>
+      <div className="category-cards-holder">
+                {
+                  currentCategory && currentCategory.blogs.map((b: Blog, i: number) => (
+                    <div key={i} className="category-card">
+                      <div><h3>{b.title}</h3>
+                      </div>
+                      <Link href={b.url}><button className="read-more-btn">Read More</button></Link>
+                    </div>
+                  ))
+                }
+              </div>
       </div>
     </div>
   );

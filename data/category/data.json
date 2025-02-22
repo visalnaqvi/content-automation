@@ -1,5 +1,12 @@
 [
   {
+    "name": "UPSC",
+    "image": "https://www.cuet.edu.in/wp-content/uploads/2023/03/CUET-Logo.png",
+    "description": "The Union Public Service Commission (UPSC) conducts the Civil Services Examination (CSE) and other competitive exams to recruit candidates for prestigious government positions like IAS, IPS, IFS, and other central services. The exam includes three stages: Prelims, Mains, and Interview.",
+    "key": "upsc",
+    "blogs": []
+  },
+  {
     "name": "CUET PG",
     "image": "https://www.cuet.edu.in/wp-content/uploads/2023/03/CUET-Logo.png",
     "description": "CUET PG is a national-level entrance exam conducted by NTA for admission to postgraduate programs in central universities and other participating institutions across various disciplines, including science, commerce, humanities, and professional courses.",

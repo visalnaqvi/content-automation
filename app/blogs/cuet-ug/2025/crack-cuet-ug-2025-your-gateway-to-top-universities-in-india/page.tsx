@@ -1,11 +1,18 @@
 import React from 'react';
 import { Metadata } from "next";
+import { Category } from "@/types/category";
+import allCategory from "@/data/category/data.json"
+import Link from 'next/link';
+import { Blog } from '@/types/blog';
 
 export const metadata: Metadata = {
   title: "Crack CUET UG 2025: Your Gateway to Top Universities in India",
   description: "Prepare to crack the CUET UG course and unlock your future at India's top universities. Get insights, tips, and a comprehensive guide to succeed.",
 };
 const CrackCUETUG2025YourGatewayToTopUniversitiesInIndia: React.FC = () => {
+  const category = "cuet-ug"
+  const currentCategory:Category | undefined = allCategory.find((item: Category) => item.key === category)
+
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
@@ -61,7 +68,18 @@ const CrackCUETUG2025YourGatewayToTopUniversitiesInIndia: React.FC = () => {
         <p>As you prepare for CUET, keep a positive attitude and embrace the learning experience. Every effort put forth today will blossom into opportunities tomorrow, leading you toward your academic and career aspirations. Best of luck with your CUET preparation journey!</p>
       </div>
       <div className='blog-sidebar'>
-        <p>This is sidebar</p>
+        <h2>Related Blogs</h2>
+      <div className="category-cards-holder">
+                {
+                  currentCategory && currentCategory.blogs.map((b: Blog, i: number) => (
+                    <div key={i} className="category-card">
+                      <div><h3>{b.title}</h3>
+                      </div>
+                      <Link href={b.url}><button className="read-more-btn">Read More</button></Link>
+                    </div>
+                  ))
+                }
+              </div>
       </div>
     </div>
   );

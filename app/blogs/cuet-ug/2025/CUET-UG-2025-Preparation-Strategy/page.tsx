@@ -1,12 +1,18 @@
 import React from 'react';
-import Head from 'next/head';
 import { Metadata } from "next";
+import { Category } from "@/types/category";
+import allCategory from "@/data/category/data.json"
+import Link from 'next/link';
+import { Blog } from '@/types/blog';
 
 export const metadata: Metadata = {
   title: "CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores",
   description: "Discover expert tips and effective strategies to ace the CUET UG course examination in 2025. Maximize your preparation with our comprehensive guide!",
 };
 const CUET_UG_2025_Preparation_Strategy: React.FC = () => {
+  const category = "cuet-ug"
+  const currentCategory:Category | undefined = allCategory.find((item: Category) => item.key === category)
+
   return (
     <div className='blog-wrapper'>
       <div className='blog-body'>
@@ -58,7 +64,18 @@ const CUET_UG_2025_Preparation_Strategy: React.FC = () => {
         <p>As you embark on this journey, keep your motivations at the forefront. Understand that every effort you invest in your preparation is a step towards securing your future. With determination, resilience, and the right strategies, you will not only conquer the CUET UG exam but also lay a solid foundation for your academic and professional aspirations. Best of luck! You have got this!</p>
       </div>
       <div className='blog-sidebar'>
-        <p>This is the sidebar.</p>
+        <h2>Related Blogs</h2>
+      <div className="category-cards-holder">
+                {
+                  currentCategory && currentCategory.blogs.map((b: Blog, i: number) => (
+                    <div key={i} className="category-card">
+                      <div><h3>{b.title}</h3>
+                      </div>
+                      <Link href={b.url}><button className="read-more-btn">Read More</button></Link>
+                    </div>
+                  ))
+                }
+              </div>
       </div>
     </div>
   );

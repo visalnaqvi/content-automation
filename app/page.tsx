@@ -6,7 +6,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_WEBSITE_NAME + " | Home",
-  description: process.env.NEXT_PUBLIC_WEBSITE_KEYWORDS,
+  description: process.env.NEXT_PUBLIC_WEBSITE_DESCRIPTION,
+  keywords: process.env.NEXT_PUBLIC_WEBSITE_KEYWORDS,
 };
 
 export default function Home() {

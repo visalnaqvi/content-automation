@@ -76,7 +76,7 @@ function updateCategoryFile(blog: Blog, category: string) {
     let categoryData = existingData.find(c => c.key === category)
 
     if (categoryData) {
-      if (categoryData.blogs.length >= 10) {
+      if (categoryData.blogs.length >= 20) {
         categoryData.blogs.pop()
       }
       categoryData.blogs.unshift(blog)
@@ -110,7 +110,6 @@ function updateDataFile(
     "data",
     "blogs",
     year,
-    month,
     category,
     "data.json"
   )
@@ -292,20 +291,37 @@ You need to follow this output format very strictly.
 
     const blogPageContent = `
       import React from 'react';
-      import type { Metadata } from "next";
+      import { Metadata } from "next";
+      import { Category } from "@/types/category";
+      import allCategory from "@/data/category/data.json"
+      import Link from 'next/link';
+      import { Blog } from '@/types/blog';
       export const metadata: Metadata = {
         title: ${topic},
         description: ${description},
       };
       const ${slug.replace(/-/g, "_")}: React.FC = () => {
+        const category = ${category}
+        const currentCategory:Category | undefined = allCategory.find((item: Category) => item.key === category)
         return (
           <div className='blog-wrapper'>
           <div className='blog-body'>
             ${blogContent}
           </div>
           <div className='blog-sidebar'>
-            <p>this is side bar</p>
-          </div>
+        <h2>Related Blogs</h2>
+      <div className="category-cards-holder">
+                {
+                  currentCategory && currentCategory.blogs.map((b: Blog, i: number) => (
+                    <div key={i} className="category-card">
+                      <div><h3>{b.title}</h3>
+                      </div>
+                      <Link href={b.url}><button className="read-more-btn">Read More</button></Link>
+                    </div>
+                  ))
+                }
+              </div>
+      </div>
           </div>
         );
       };

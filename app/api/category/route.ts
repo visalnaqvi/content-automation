@@ -4,22 +4,28 @@ import {exec} from "child_process"
 import { Category } from "@/types/category"
 
 function readCategories(categoryFilePath: string): Category[] {
-  const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
-  return JSON.parse(fileContent)
+  try {
+    const fileContent = fs.readFileSync(categoryFilePath, "utf-8")
+    return JSON.parse(fileContent)
+  } catch (error) {
+    console.error("Error reading categories file:", error)
+    throw new Error("Failed to read categories file")
+  }
 }
 
 function addTogit(message: string) {
-  exec(
-    'git add . && git commit -m " ' + message + '" && git push',
-    (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Git Error: ${error.message}`)
-        return new Response(JSON.stringify({error: "Git commit failed"}), {
-          status: 500,
-        })
+  return new Promise((resolve, reject) => {
+    exec(
+      'git add . && git commit -m " ' + message + '" && git push',
+      (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Git Error: ${error.message}`)
+          reject(error)
+        }
+        resolve(stdout)
       }
-    }
-  )
+    )
+  })
 }
 
 export async function GET(req: Request) {
@@ -61,12 +67,13 @@ export async function GET(req: Request) {
     )
   } catch (error) {
     console.error("Error reading categories:", error)
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
     return new Response(
       JSON.stringify({
         success: false,
         error: "Failed to fetch categories",
-        message:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        message: errorMessage,
+        details: error instanceof Error ? error.stack : undefined
       }),
       {
         status: 500,
@@ -84,9 +91,23 @@ export async function POST(req: Request) {
     const {name, image, description, key} = body
 
     if (!name || !image || !description || !key) {
-      return new Response(JSON.stringify({error: "Missing required fields"}), {
-        status: 400,
-      })
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Validation Error",
+          message: "Missing required fields",
+          details: {
+            name: !name ? "Name is required" : null,
+            image: !image ? "Image is required" : null,
+            description: !description ? "Description is required" : null,
+            key: !key ? "Key is required" : null
+          }
+        }), 
+        {
+          status: 400,
+          headers: {"Content-Type": "application/json"}
+        }
+      )
     }
 
     const categoryFilePath = path.join(
@@ -101,12 +122,18 @@ export async function POST(req: Request) {
     // Check if category with same key already exists
     if (existingData.some(category => category.key === key)) {
       return new Response(
-        JSON.stringify({error: "Category with this key already exists"}),
+        JSON.stringify({
+          success: false,
+          error: "Duplicate Entry",
+          message: "Category with this key already exists"
+        }),
         {
           status: 400,
+          headers: {"Content-Type": "application/json"}
         }
       )
     }
+
     const newCategory: Category = {
       name,
       image,
@@ -117,19 +144,38 @@ export async function POST(req: Request) {
 
     existingData.unshift(newCategory)
 
-    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
-    addTogit("Added new category " + key)
+    try {
+      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+      await addTogit("Added new category " + key)
+    } catch (writeError) {
+      throw new Error(`Failed to save category: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`)
+    }
+
     return new Response(
-      JSON.stringify({message: "Category added successfully"}),
+      JSON.stringify({
+        success: true,
+        message: "Category added successfully",
+        data: newCategory
+      }),
       {
         status: 200,
+        headers: {"Content-Type": "application/json"}
       }
     )
   } catch (error) {
     console.error("Error adding category:", error)
-    return new Response(JSON.stringify({error: "Failed to add category"}), {
-      status: 500,
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Internal Server Error",
+        message: "Failed to add category",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      {
+        status: 500,
+        headers: {"Content-Type": "application/json"}
+      }
+    )
   }
 }
 
@@ -139,9 +185,17 @@ export async function DELETE(req: Request) {
     const {key} = body
 
     if (!key) {
-      return new Response(JSON.stringify({error: "Category key is required"}), {
-        status: 400,
-      })
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Validation Error",
+          message: "Category key is required"
+        }), 
+        {
+          status: 400,
+          headers: {"Content-Type": "application/json"}
+        }
+      )
     }
 
     const categoryFilePath = path.join(
@@ -156,29 +210,56 @@ export async function DELETE(req: Request) {
     const categoryIndex = existingData.findIndex(
       category => category.key === key
     )
-    addTogit("Deleted category " + key)
+
     if (categoryIndex === -1) {
-      return new Response(JSON.stringify({error: "Category not found"}), {
-        status: 404,
-      })
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Not Found",
+          message: "Category not found"
+        }), 
+        {
+          status: 404,
+          headers: {"Content-Type": "application/json"}
+        }
+      )
     }
 
     // Remove the category
-    existingData.splice(categoryIndex, 1)
+    const deletedCategory = existingData.splice(categoryIndex, 1)[0]
 
-    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+    try {
+      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+      await addTogit("Deleted category " + key)
+    } catch (writeError) {
+      throw new Error(`Failed to delete category: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`)
+    }
 
     return new Response(
-      JSON.stringify({message: "Category deleted successfully"}),
+      JSON.stringify({
+        success: true,
+        message: "Category deleted successfully",
+        data: deletedCategory
+      }),
       {
         status: 200,
+        headers: {"Content-Type": "application/json"}
       }
     )
   } catch (error) {
     console.error("Error deleting category:", error)
-    return new Response(JSON.stringify({error: "Failed to delete category"}), {
-      status: 500,
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Internal Server Error",
+        message: "Failed to delete category",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      {
+        status: 500,
+        headers: {"Content-Type": "application/json"}
+      }
+    )
   }
 }
 
@@ -188,9 +269,17 @@ export async function PUT(req: Request) {
     const {key, name, image, description} = body
 
     if (!key) {
-      return new Response(JSON.stringify({error: "Category key is required"}), {
-        status: 400,
-      })
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Validation Error",
+          message: "Category key is required"
+        }), 
+        {
+          status: 400,
+          headers: {"Content-Type": "application/json"}
+        }
+      )
     }
 
     const categoryFilePath = path.join(
@@ -207,31 +296,60 @@ export async function PUT(req: Request) {
     )
 
     if (categoryIndex === -1) {
-      return new Response(JSON.stringify({error: "Category not found"}), {
-        status: 404,
-      })
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Not Found",
+          message: "Category not found"
+        }), 
+        {
+          status: 404,
+          headers: {"Content-Type": "application/json"}
+        }
+      )
     }
 
     // Update the category
-    existingData[categoryIndex] = {
+    const updatedCategory = {
       ...existingData[categoryIndex],
       name: name || existingData[categoryIndex].name,
       image: image || existingData[categoryIndex].image,
       description: description || existingData[categoryIndex].description,
     }
+    
+    existingData[categoryIndex] = updatedCategory
 
-    fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
-    addTogit("Updated category " + key)
+    try {
+      fs.writeFileSync(categoryFilePath, JSON.stringify(existingData, null, 2), "utf-8")
+      await addTogit("Updated category " + key)
+    } catch (writeError) {
+      throw new Error(`Failed to update category: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`)
+    }
+
     return new Response(
-      JSON.stringify({message: "Category updated successfully"}),
+      JSON.stringify({
+        success: true,
+        message: "Category updated successfully",
+        data: updatedCategory
+      }),
       {
         status: 200,
+        headers: {"Content-Type": "application/json"}
       }
     )
   } catch (error) {
     console.error("Error updating category:", error)
-    return new Response(JSON.stringify({error: "Failed to update category"}), {
-      status: 500,
-    })
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Internal Server Error",
+        message: "Failed to update category",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }), 
+      {
+        status: 500,
+        headers: {"Content-Type": "application/json"}
+      }
+    )
   }
 }
