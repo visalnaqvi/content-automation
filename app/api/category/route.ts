@@ -24,22 +24,22 @@ async function addTogit(message: string, finalContent: string) {
   console.log("Adding to GitHub...")
   try {
     const {data} = await octokit.repos.getContent({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
-      path: "data/category/data.json",
-      ref: "main",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
+      path: process.env.CATEGORY_FILE_PATH || "",
+      ref: process.env.GITHUB_BRANCH || "",
     })
     console.log("Data:", data)
     const fileData = Array.isArray(data) ? data[0] : data
     const sha = fileData.sha
     console.log("SHA:", sha)
     await octokit.repos.createOrUpdateFileContents({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
-      path: "data/category/data.json",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
+      path: process.env.CATEGORY_FILE_PATH || "",
       message: message,
       content: Buffer.from(finalContent).toString("base64"),
-      branch: "main",
+      branch: process.env.GITHUB_BRANCH || "",
       sha,
     })
     console.log("File updated successfully")
@@ -52,12 +52,12 @@ async function addTogit(message: string, finalContent: string) {
     ) {
       // If file doesn't exist, create a new one
       await octokit.repos.createOrUpdateFileContents({
-        owner: "visalnaqvi",
-        repo: "padaepartner",
-        path: "data/category/data.json",
+        owner: process.env.GITHUB_OWNER || "",
+        repo: process.env.GITHUB_REPO || "",
+        path: process.env.CATEGORY_FILE_PATH || "",
         message: message,
         content: Buffer.from(finalContent).toString("base64"),
-        branch: "main",
+        branch: process.env.GITHUB_BRANCH || "",
       })
     } else {
       console.error("Error updating GitHub:", error)

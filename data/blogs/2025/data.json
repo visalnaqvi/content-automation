@@ -18,7 +18,9 @@
     "url": "/blogs/cuet-ug/2025/CUET-UG-2025-Preparation-Strategy",
     "title": "CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores",
     "description": "A detailed blog about CUET UG 2025 Preparation Strategy: Expert Tips to Ace the Exam with High Scores covering key insights and important information.",
-    "img": "/images/blogs/CUET-UG-2025-Preparation-Strategy.jpg"
+    "img": "/images/blogs/CUET-UG-2025-Preparation-Strategy.jpg",
+    "slug": "something",
+    "month": "February"
   },
   {
     "date": "2025-02-21",
@@ -28,7 +30,9 @@
     "url": "/blogs/cuet-ug/2025/cuet-ug-2025-your-ultimate-guide-to-courses-eligibility-and-admission-process",
     "title": "CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process",
     "description": "A detailed blog about CUET UG 2025: Your Ultimate Guide to Courses, Eligibility, and Admission Process covering key insights and important information.",
-    "img": "/images/blogs/cuet-ug-2025-your-ultimate-guide-to-courses-eligibility-and-admission-process.jpg"
+    "img": "/images/blogs/cuet-ug-2025-your-ultimate-guide-to-courses-eligibility-and-admission-process.jpg",
+    "slug": "something",
+    "month": "February"
   },
   {
     "date": "2025-02-21",
@@ -38,7 +42,9 @@
     "url": "/blogs/cuet-ug/2025/crack-cuet-ug-2025-your-gateway-to-top-universities-in-india",
     "title": "Crack CUET UG 2025: Your Gateway to Top Universities in India",
     "description": "A detailed blog about Crack CUET UG 2025: Your Gateway to Top Universities in India covering key insights and important information.",
-    "img": "/images/blogs/crack-cuet-ug-2025-your-gateway-to-top-universities-in-india.jpg"
+    "img": "/images/blogs/crack-cuet-ug-2025-your-gateway-to-top-universities-in-india.jpg",
+    "slug": "something",
+    "month": "February"
   },
   {
     "date": "2025-02-22",
@@ -48,6 +54,8 @@
     "url": "/blogs/upsc/2025/UPSC-Exam-2025-Complete-Guide",
     "title": "UPSC Exam 2025: Complete Guide to Syllabus, Eligibility, and Preparation Strategy",
     "description": "Get a complete guide on the UPSC Civil Services Exam 2025, including syllabus, eligibility, exam pattern, and preparation tips. Learn how to crack IAS, IPS, and IFS with expert strategies!",
-    "img": "/images/blogs/UPSC-Exam-2025-Complete-Guide.jpg"
+    "img": "/images/blogs/UPSC-Exam-2025-Complete-Guide.jpg",
+    "slug": "something",
+    "month": "February"
   }
 ]

@@ -36,25 +36,25 @@ async function addTogit(
     // Get the main branch reference
     logInfo("Fetching main branch reference...")
     const ref = await octokit.git.getRef({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
-      ref: "heads/main",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
+      ref: process.env.GITHUB_REPO_REF || "",
     })
 
     logInfo("Creating new Git tree...")
     const tree = await octokit.git.createTree({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
       base_tree: ref.data.object.sha,
       tree: [
         {
-          path: "data/category/data.json",
+          path: process.env.CATEGORY_FILE_PATH || "",
           mode: "100644",
           type: "blob",
           content: existingCategoryData,
         },
         {
-          path: "data/blogs/2025/data.json",
+          path: process.env.BLOG_FILE_PATH || "",
           mode: "100644",
           type: "blob",
           content: existingBlogsData,
@@ -70,8 +70,8 @@ async function addTogit(
 
     logInfo("Creating commit...")
     const commit = await octokit.git.createCommit({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
       message: "Update blog and category files",
       tree: tree.data.sha,
       parents: [ref.data.object.sha],
@@ -79,9 +79,9 @@ async function addTogit(
 
     logInfo("Updating reference...")
     await octokit.git.updateRef({
-      owner: "visalnaqvi",
-      repo: "padaepartner",
-      ref: "heads/main",
+      owner: process.env.GITHUB_OWNER || "",
+      repo: process.env.GITHUB_REPO || "",
+      ref: process.env.GITHUB_REPO_REF || "",
       sha: commit.data.sha,
     })
 
@@ -98,7 +98,7 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
     const categoryIndex = existingCategoryData.findIndex(
       c => c.key === newBlogMeta.category
     )
-    let categoryData = existingCategoryData[categoryIndex]
+    let categoryData = existingCategoryData[categoryIndex] as Category
     if (categoryData) {
       if (categoryData.blogs.length >= 20) {
         categoryData.blogs.pop()
@@ -323,7 +323,7 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
       description,
       img: image,
       slug: slug,
-      month,
+      month: month,
     }
 
     blogs.unshift(newBlogMeta)
