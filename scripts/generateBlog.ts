@@ -106,13 +106,13 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
       categoryData.blogs.unshift(newBlogMeta)
 
       existingCategoryData[categoryIndex] = categoryData
+      logSuccess("Category file updated successfully")
       await addTogit(
         JSON.stringify(existingBlogsData, null, 2),
         newBlog,
         JSON.stringify(existingCategoryData, null, 2),
-        newBlogMeta.url + ".tsx"
+        "app/" + newBlogMeta.url + ".tsx"
       )
-      logSuccess("Category file updated successfully")
     } else {
       logError("Category does not exist")
       throw new Error("Category does not exist")
@@ -125,7 +125,7 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
 
 async function updateDataFile(existingBlogsData: Blog[], newBlog: string) {
   try {
-    updateCategoryFile(existingBlogsData, newBlog)
+    await updateCategoryFile(existingBlogsData, newBlog)
   } catch (error) {
     logError("Error updating data.json", error)
     throw error
