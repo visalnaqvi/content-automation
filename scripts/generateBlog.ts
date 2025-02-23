@@ -260,12 +260,7 @@ async function generateBlogFinalCode(blogTSXCode: string) {
     throw new Error("Failed to format blog content")
   }
 
-  const rawContent = response.choices[0].message.content
-  const finalContent = rawContent
-    .replace(/^[\s\S]*?(?=import)/, "")
-    .replace(/\n```$/, "")
-
-  return finalContent
+  return response.choices[0].message.content
 }
 export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
   const {
@@ -310,9 +305,11 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     )
 
     logInfo("Formatting final blog content...")
-    const finalContent = await generateBlogFinalCode(generatedBlogCode)
+    // const rawContent = await generateBlogFinalCode(generatedBlogCode)
+    const finalContent = generatedBlogCode
+      .replace(/^[\s\S]*?(?=import)/, "")
+      .replace(/\n```$/, "")
 
-    logInfo("Creating blog metadata...")
     const newBlogMeta: Blog = {
       date: new Date().toISOString(),
       year,
