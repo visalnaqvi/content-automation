@@ -305,8 +305,8 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     )
 
     logInfo("Formatting final blog content...")
-    // const rawContent = await generateBlogFinalCode(generatedBlogCode)
-    const finalContent = generatedBlogCode
+    const rawContent = await generateBlogFinalCode(generatedBlogCode)
+    const finalContent = rawContent
       .replace(/^[\s\S]*?(?=import)/, "")
       .replace(/\n```$/, "")
 
