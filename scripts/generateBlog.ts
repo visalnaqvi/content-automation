@@ -111,7 +111,7 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
         JSON.stringify(existingBlogsData, null, 2),
         newBlog,
         JSON.stringify(existingCategoryData, null, 2),
-        "app/" + newBlogMeta.url + ".tsx"
+        "app/" + newBlogMeta.url + "/page.tsx"
       )
     } else {
       logError("Category does not exist")
@@ -206,11 +206,11 @@ function generateCompleteTSXCode(
       import Link from 'next/link';
       import { Blog } from '@/types/blog';
       export const metadata: Metadata = {
-        title: ${topic},
-        description: ${description},
+        title: "${topic}",
+        description: "${description}",
       };
       const ${slug.replace(/-/g, "_")}: React.FC = () => {
-        const category = ${category}
+        const category = "${category}"
         const currentCategory:Category | undefined = allCategory.find((item: Category) => item.key === category)
         return (
           <div className='blog-wrapper'>
