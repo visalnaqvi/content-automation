@@ -1,4 +1,3 @@
-"use server"
 import {Category} from "@/types/category"
 import {Blog} from "@/types/blog"
 import existingCategoryData from "@/data/category/data.json"
