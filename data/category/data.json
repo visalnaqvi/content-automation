@@ -4,6 +4,19 @@
     "image": "https://www.cuet.edu.in/wp-content/uploads/2023/03/CUET-Logo.png",
     "description": "The Common University Entrance Test (CUET UG) is a national-level entrance exam conducted by the National Testing Agency (NTA) for admission to undergraduate programs in central, state, deemed, and private universities across India. It provides a single-window opportunity for students to apply to multiple universities based on their CUET scores.",
     "key": "cuet-ug",
-    "blogs": []
+    "blogs": [
+      {
+        "date": "2025-02-26T12:49:45.786Z",
+        "year": 2025,
+        "category": "cuet-ug",
+        "id": 1,
+        "url": "blogs/cuet-ug/2025/CUET-UG-2025-Preparation-Strategy",
+        "title": "CUET UG 2025 Preparation: Subject-Wise Study Plan",
+        "description": "Prepare for CUET UG 2025 with a subject-wise study plan, expert tips, and effective strategies. Learn time management techniques, best books, and practice methods to ace the exam with confidence!",
+        "img": "some-image",
+        "slug": "CUET-UG-2025-Preparation-Strategy",
+        "month": "February"
+      }
+    ]
   }
 ]
