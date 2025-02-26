@@ -65,7 +65,11 @@ function validateBlogRequest(body: BlogRequestData): Response | null {
       }),
       {status: 400, headers: {"Content-Type": "application/json"}}
     )
-  } else if (!existingCategories.map(cat => cat.key).includes(body.category)) {
+  } else if (
+    !existingCategories
+      .map((cat: {key: string}) => cat.key)
+      .includes(body.category)
+  ) {
     return new Response(
       JSON.stringify({success: false, error: "Invalid category"}),
       {status: 400, headers: {"Content-Type": "application/json"}}

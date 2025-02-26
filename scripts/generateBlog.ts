@@ -1,10 +1,12 @@
 import {Category} from "@/types/category"
 import {Blog} from "@/types/blog"
 import existingCategoryData from "@/data/category/data.json"
+const categoryData: Category[] = existingCategoryData as Category[]
 import {Octokit} from "@octokit/rest"
 import OpenAI from "openai"
 const octokit = new Octokit({auth: process.env.GITHUB_TOKEN})
 import blogs from "@/data/blogs/2025/data.json"
+const blogsData: Blog[] = blogs as Blog[]
 import {BlogRequestData} from "@/types/blogRequestData"
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "test-api-key",
@@ -95,22 +97,22 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
   logInfo("Updating category file...")
   const newBlogMeta = existingBlogsData[0]
   try {
-    const categoryIndex = existingCategoryData.findIndex(
+    const categoryIndex = categoryData.findIndex(
       c => c.key === newBlogMeta.category
     )
-    let categoryData = existingCategoryData[categoryIndex] as Category
-    if (categoryData) {
-      if (categoryData.blogs.length >= 20) {
-        categoryData.blogs.pop()
+    let currentCategory = categoryData[categoryIndex]
+    if (currentCategory) {
+      if (currentCategory.blogs.length >= 20) {
+        currentCategory.blogs.pop()
       }
-      categoryData.blogs.unshift(newBlogMeta)
+      currentCategory.blogs.unshift(newBlogMeta)
 
-      existingCategoryData[categoryIndex] = categoryData
+      categoryData[categoryIndex] = currentCategory as Category
       logSuccess("Category file updated successfully")
       await addTogit(
         JSON.stringify(existingBlogsData, null, 2),
         newBlog,
-        JSON.stringify(existingCategoryData, null, 2),
+        JSON.stringify(categoryData, null, 2),
         "app/" + newBlogMeta.url + "/page.tsx"
       )
     } else {
@@ -314,7 +316,7 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
       date: new Date().toISOString(),
       year,
       category,
-      id: blogs.length + 1,
+      id: blogsData.length + 1,
       url: `blogs/${category}/${year}/${slug}`,
       title: topic,
       description,
@@ -323,10 +325,10 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
       month: month,
     }
 
-    blogs.unshift(newBlogMeta)
+    blogsData.unshift(newBlogMeta)
 
     logInfo("Updating data files...")
-    await updateDataFile(blogs as Blog[], finalContent)
+    await updateDataFile(blogsData as Blog[], finalContent)
 
     logSuccess("Blog generation completed successfully")
   } catch (error) {
