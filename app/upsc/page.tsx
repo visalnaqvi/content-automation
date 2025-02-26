@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const currentCategory: Category | undefined = category.find((item: Category) => item.key === "upsc")
+  const currentCategory = category.find((item: { key: string }) => item.key === "upsc") as Category | undefined
   return (
     <div>
       <main>
