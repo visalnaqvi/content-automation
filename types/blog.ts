@@ -1,6 +1,6 @@
 export type Blog = {
   date: string
-  year: string
+  year: number
   category: string
   id: number
   url: string

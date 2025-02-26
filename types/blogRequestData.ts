@@ -2,7 +2,7 @@ export type BlogRequestData = {
   topic: string
   slug: string
   category: string
-  year: string
+  year: number
   keyword: string
   wordLength: number
   audience: string
@@ -12,5 +12,5 @@ export type BlogRequestData = {
   month: string
   note: string
   description: string
-  image: string,
+  image: string
 }

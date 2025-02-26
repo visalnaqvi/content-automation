@@ -81,11 +81,6 @@ function validateBlogRequest(body: BlogRequestData): Response | null {
       JSON.stringify({success: false, error: "Missing required field year"}),
       {status: 400, headers: {"Content-Type": "application/json"}}
     )
-  } else if (body.year.length > 4 || body.year.length < 4) {
-    return new Response(
-      JSON.stringify({success: false, error: "Year must be 4 digits"}),
-      {status: 400, headers: {"Content-Type": "application/json"}}
-    )
   }
 
   if (!body.keyword) {
@@ -204,21 +199,25 @@ export async function POST(req: Request) {
     console.log("✅ Validation passed. Generating blog TSX code...")
 
     try {
-      generateBlogTSXCode(body).catch(error => {
+      await generateBlogTSXCode(body).catch(error => {
         console.error("❌ Background Blog Generation Error:", error)
       })
 
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Blog generation Triggered Check logs for more info!",
+          message: "Blog generation successful!",
         }),
         {status: 200, headers: {"Content-Type": "application/json"}}
       )
     } catch (error) {
       console.error("❌ Blog Generation Error:", error)
       return new Response(
-        JSON.stringify({success: false, error: "Blog generation failed"}),
+        JSON.stringify({
+          success: false,
+          error:
+            "__________________Blog generation failed_____________________",
+        }),
         {status: 500, headers: {"Content-Type": "application/json"}}
       )
     }
