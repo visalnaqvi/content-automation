@@ -1,3 +1,4 @@
+"use server"
 import {Category} from "@/types/category"
 import {Blog} from "@/types/blog"
 import existingCategoryData from "@/data/category/data.json"
@@ -265,7 +266,6 @@ async function generateBlogFinalCode(blogTSXCode: string) {
   return response.choices[0].message.content
 }
 export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
-  "use server"
   const {
     topic,
     slug,

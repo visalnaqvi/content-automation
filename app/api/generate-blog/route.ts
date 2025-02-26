@@ -1,5 +1,5 @@
 "use server"
-import {generateBlogTSXCode} from "../../../scripts/generateBlog"
+import {generateBlogTSXCode} from "../../generateBlog"
 import {BlogRequestData} from "@/types/blogRequestData"
 import existingCategories from "@/data/category/data.json"
 
