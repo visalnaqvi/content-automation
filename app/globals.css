@@ -2,9 +2,9 @@
   --foreground: #023047;
   --foreground-background: #bce3f5;
   --foreground-light: #d3e7f1;
-  --support-blue: #669bbc;
-  --contrast-red: #d62828;
-  --contrast-yellow: #f77f00;
+  --support: #669bbc;
+  --contrast-primary: #d62828;
+  --contrast: #f77f00;
   --background: #f8f9fa;
 }
 
@@ -115,7 +115,7 @@ li {
 .heroBtn {
   padding: 15px 30px;
   color: var(--background);
-  background-color: var(--contrast-red);
+  background-color: var(--contrast-primary);
   outline: none;
   border: none;
   border-radius: 5px;
@@ -126,7 +126,7 @@ li {
 }
 
 .heroBtn:hover {
-  background-color: var(--contrast-yellow);
+  background-color: var(--contrast);
 }
 
 .logo {
@@ -149,7 +149,7 @@ li {
   margin: 0 10px 10px 0;
   flex-grow: 1;
   padding: 20px;
-  border: 1px solid var(--support-blue);
+  border: 1px solid var(--support);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -163,7 +163,7 @@ li {
 
 .read-more-btn {
   padding: 10px 20px;
-  background-color: var(--contrast-red);
+  background-color: var(--contrast-primary);
   color: var(--background);
   border: none;
   border-radius: 5px;
@@ -172,7 +172,7 @@ li {
 }
 
 .read-more-btn:hover {
-  background-color: var(--contrast-yellow);
+  background-color: var(--contrast);
 }
 
 .section-title {
@@ -188,7 +188,7 @@ li {
   background-color: var(--foreground-light);
   color: var(--foreground);
   box-shadow: 10px 10px 20px #00000080;
-  border-top: 1px solid var(--support-blue);
+  border-top: 1px solid var(--support);
   margin-top: 20px;
 }
 
@@ -205,7 +205,7 @@ td {
 }
 
 th {
-  background-color: var(--contrast-yellow);
+  background-color: var(--contrast);
   color: var(--background);
 }
 
