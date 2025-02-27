@@ -8,6 +8,8 @@ const octokit = new Octokit({auth: process.env.GITHUB_TOKEN})
 import blogs from "@/data/blogs/2025/data.json"
 const blogsData: Blog[] = blogs as Blog[]
 import {BlogRequestData} from "@/types/blogRequestData"
+import fs from "fs"
+import {exec} from "child_process"
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "test-api-key",
 })
@@ -36,56 +38,60 @@ async function addTogit(
   logInfo("Starting GitHub update process...")
   try {
     // Get the main branch reference
-    logInfo("Fetching main branch reference...")
-    const ref = await octokit.git.getRef({
-      owner: process.env.GITHUB_OWNER || "",
-      repo: process.env.GITHUB_REPO || "",
-      ref: process.env.GITHUB_REPO_REF || "",
-    })
+    // logInfo("Fetching main branch reference...")
+    // const ref = await octokit.git.getRef({
+    //   owner: process.env.GITHUB_OWNER || "",
+    //   repo: process.env.GITHUB_REPO || "",
+    //   ref: process.env.GITHUB_REPO_REF || "",
+    // })
 
-    logInfo("Creating new Git tree...")
-    const tree = await octokit.git.createTree({
-      owner: process.env.GITHUB_OWNER || "",
-      repo: process.env.GITHUB_REPO || "",
-      base_tree: ref.data.object.sha,
-      tree: [
-        {
-          path: process.env.CATEGORY_FILE_PATH || "",
-          mode: "100644",
-          type: "blob",
-          content: existingCategoryData,
-        },
-        {
-          path: process.env.BLOG_FILE_PATH || "",
-          mode: "100644",
-          type: "blob",
-          content: existingBlogsData,
-        },
-        {
-          path: newBlogPath,
-          mode: "100644",
-          type: "blob",
-          content: newBlog,
-        },
-      ],
-    })
+    // logInfo("Creating new Git tree...")
+    // const tree = await octokit.git.createTree({
+    //   owner: process.env.GITHUB_OWNER || "",
+    //   repo: process.env.GITHUB_REPO || "",
+    //   base_tree: ref.data.object.sha,
+    //   tree: [
+    //     {
+    //       path: process.env.CATEGORY_FILE_PATH || "",
+    //       mode: "100644",
+    //       type: "blob",
+    //       content: existingCategoryData,
+    //     },
+    //     {
+    //       path: process.env.BLOG_FILE_PATH || "",
+    //       mode: "100644",
+    //       type: "blob",
+    //       content: existingBlogsData,
+    //     },
+    //     {
+    //       path: newBlogPath,
+    //       mode: "100644",
+    //       type: "blob",
+    //       content: newBlog,
+    //     },
+    //   ],
+    // })
 
-    logInfo("Creating commit...")
-    const commit = await octokit.git.createCommit({
-      owner: process.env.GITHUB_OWNER || "",
-      repo: process.env.GITHUB_REPO || "",
-      message: "Update blog and category files",
-      tree: tree.data.sha,
-      parents: [ref.data.object.sha],
-    })
+    // logInfo("Creating commit...")
+    // const commit = await octokit.git.createCommit({
+    //   owner: process.env.GITHUB_OWNER || "",
+    //   repo: process.env.GITHUB_REPO || "",
+    //   message: "Update blog and category files",
+    //   tree: tree.data.sha,
+    //   parents: [ref.data.object.sha],
+    // })
 
-    logInfo("Updating reference...")
-    await octokit.git.updateRef({
-      owner: process.env.GITHUB_OWNER || "",
-      repo: process.env.GITHUB_REPO || "",
-      ref: process.env.GITHUB_REPO_REF || "",
-      sha: commit.data.sha,
-    })
+    // logInfo("Updating reference...")
+    // await octokit.git.updateRef({
+    //   owner: process.env.GITHUB_OWNER || "",
+    //   repo: process.env.GITHUB_REPO || "",
+    //   ref: process.env.GITHUB_REPO_REF || "",
+    //   sha: commit.data.sha,
+    // })
+
+    exec(`git add .`)
+    exec(`git commit -m "Update blog and category files"`)
+    exec(`git push`)
 
     logSuccess("Successfully updated GitHub repository")
   } catch (error: unknown) {
@@ -109,6 +115,10 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
 
       categoryData[categoryIndex] = currentCategory as Category
       logSuccess("Category file updated successfully")
+      fs.writeFileSync(
+        process.env.CATEGORY_FILE_PATH || "/data/category/data.json",
+        JSON.stringify(categoryData, null, 2)
+      )
       await addTogit(
         JSON.stringify(existingBlogsData, null, 2),
         newBlog,
@@ -326,7 +336,14 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     }
 
     blogsData.unshift(newBlogMeta)
-
+    fs.writeFileSync(
+      `app/blogs/${category}/${year}/${slug}/page.tsx`,
+      finalContent
+    )
+    fs.writeFileSync(
+      process.env.BLOGS_FILE_PATH || "/data/blogs/2025/data.json",
+      JSON.stringify(blogsData, null, 2)
+    )
     logInfo("Updating data files...")
     await updateDataFile(blogsData as Blog[], finalContent)
 
