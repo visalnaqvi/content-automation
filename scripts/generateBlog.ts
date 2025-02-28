@@ -9,6 +9,7 @@ import blogs from "@/data/blogs/2025/data.json"
 const blogsData: Blog[] = blogs as Blog[]
 import {BlogRequestData} from "@/types/blogRequestData"
 import fs from "fs"
+import path from "path"
 import {exec} from "child_process"
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "test-api-key",
@@ -336,6 +337,10 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     }
 
     blogsData.unshift(newBlogMeta)
+    fs.mkdirSync(
+      path.dirname(`app/blogs/${category}/${year}/${slug}/page.tsx`),
+      {recursive: true}
+    )
     fs.writeFileSync(
       `app/blogs/${category}/${year}/${slug}/page.tsx`,
       finalContent
