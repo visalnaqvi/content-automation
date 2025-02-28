@@ -10,7 +10,7 @@ const blogsData: Blog[] = blogs as Blog[]
 import {BlogRequestData} from "@/types/blogRequestData"
 import fs from "fs"
 import path from "path"
-import {exec} from "child_process"
+import {execSync} from "child_process"
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "test-api-key",
 })
@@ -89,11 +89,14 @@ async function addTogit(
     //   ref: process.env.GITHUB_REPO_REF || "",
     //   sha: commit.data.sha,
     // })
-
-    exec(`git add .`)
-    exec(`git commit -m "Update blog and category files"`)
-    exec(`git push`)
-
+    logInfo("adding to git")
+    execSync("git add .", {stdio: "inherit"})
+    logInfo("commitign to git")
+    execSync('git commit -m "Update blog and category files"', {
+      stdio: "inherit",
+    })
+    logInfo("pushing to git")
+    execSync("git push", {stdio: "inherit"})
     logSuccess("Successfully updated GitHub repository")
   } catch (error: unknown) {
     logError("Failed to update GitHub", error)
@@ -117,7 +120,8 @@ async function updateCategoryFile(existingBlogsData: Blog[], newBlog: string) {
       categoryData[categoryIndex] = currentCategory as Category
       logSuccess("Category file updated successfully")
       fs.writeFileSync(
-        process.env.CATEGORY_FILE_PATH || "/data/category/data.json",
+        process.cwd() + process.env.CATEGORY_FILE_PATH ||
+          "/data/category/data.json",
         JSON.stringify(categoryData, null, 2)
       )
       await addTogit(
@@ -292,11 +296,34 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     description,
     image,
   } = blogRequestData as BlogRequestData
-
   logInfo(`Starting blog generation process for: "${topic}"`)
-
   try {
     logInfo("Generating blog inner content...")
+    logInfo(process.cwd() + process.env.CATEGORY_FILE_PATH)
+    logInfo(process.cwd() + process.env.BLOG_FILE_PATH)
+    logInfo(process.cwd() + `/app/blogs/${category}/${year}/${slug}/page.tsx`)
+    fs.writeFileSync(
+      process.cwd() + process.env.CATEGORY_FILE_PATH ||
+        "/data/category/data.json",
+      JSON.stringify({hello: "world"}, null, 2)
+    )
+
+    fs.mkdirSync(
+      path.dirname(
+        process.cwd() + `/app/blogs/${category}/${year}/${slug}/page.tsx`
+      ),
+      {recursive: true}
+    )
+    fs.writeFileSync(
+      process.cwd() + `/app/blogs/${category}/${year}/${slug}/page.tsx`,
+      "hello world"
+    )
+    fs.writeFileSync(
+      process.cwd() + process.env.BLOGS_FILE_PATH ||
+        "/data/blogs/2025/data.json",
+      JSON.stringify({hello: "world"}, null, 2)
+    )
+
     const blogContent = await generateBlogInnerCode(
       keyword,
       wordLength,
@@ -337,16 +364,13 @@ export async function generateBlogTSXCode(blogRequestData: BlogRequestData) {
     }
 
     blogsData.unshift(newBlogMeta)
-    fs.mkdirSync(
-      path.dirname(`app/blogs/${category}/${year}/${slug}/page.tsx`),
-      {recursive: true}
-    )
     fs.writeFileSync(
-      `app/blogs/${category}/${year}/${slug}/page.tsx`,
+      process.cwd() + `/app/blogs/${category}/${year}/${slug}/page.tsx`,
       finalContent
     )
     fs.writeFileSync(
-      process.env.BLOGS_FILE_PATH || "/data/blogs/2025/data.json",
+      process.cwd() + process.env.BLOGS_FILE_PATH ||
+        "/data/blogs/2025/data.json",
       JSON.stringify(blogsData, null, 2)
     )
     logInfo("Updating data files...")
