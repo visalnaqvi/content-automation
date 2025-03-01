@@ -6,6 +6,18 @@
     "key": "cuet-pg",
     "blogs": [
       {
+        "date": "2025-03-01T09:23:16.927Z",
+        "year": 2025,
+        "category": "cuet-pg",
+        "id": 4,
+        "url": "blogs/cuet-pg/2025/CUET-PG-2025-Exam-Pattern",
+        "title": "CUET PG 2025 Exam Pattern",
+        "description": "Prepare for CUET UG 2025 with a subject-wise study plan, expert tips, and effective strategies. Learn time management techniques, best books, and practice methods to ace the exam with confidence!",
+        "img": "some-image",
+        "slug": "CUET-PG-2025-Exam-Pattern",
+        "month": "March"
+      },
+      {
         "date": "2025-03-01T08:38:02.020Z",
         "year": 2025,
         "category": "cuet-pg",
